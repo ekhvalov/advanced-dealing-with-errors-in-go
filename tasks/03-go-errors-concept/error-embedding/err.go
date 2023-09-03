@@ -9,3 +9,31 @@ var (
 )
 
 // Реализуй тип Err и типы для ошибок выше, используя его.
+
+type Err struct {
+	Msg string
+}
+
+func (e *Err) Error() string {
+	return e.Msg
+}
+
+type AlreadyDoneError struct {
+	Err
+}
+
+type InconsistentDataError struct {
+	Err
+}
+
+type InvalidIDError struct {
+	Err
+}
+
+type NotReadyError struct {
+	Err
+}
+
+type NotFoundError struct {
+	Err
+}
