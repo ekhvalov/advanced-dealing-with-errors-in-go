@@ -13,3 +13,10 @@ func (p *PipelineError) Error() string {
 }
 
 // Добавь метод Is для типа *PipelineError.
+func (p *PipelineError) Is(err error) bool {
+	e, ok := err.(*PipelineError)
+	if ok {
+		return p.User == e.User && p.Name == e.Name
+	}
+	return false
+}
