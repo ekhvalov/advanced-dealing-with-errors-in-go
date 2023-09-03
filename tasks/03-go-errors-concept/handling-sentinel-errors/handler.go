@@ -24,7 +24,13 @@ type Handler struct{}
 func (h *Handler) Handle(job Job) (postpone time.Duration, err error) {
 	err = h.process(job)
 	if err != nil {
-		// Обработайте ошибку.
+		if err == ErrAlreadyDone || err == ErrInconsistentData || err == ErrInvalidID || err == ErrNotFound {
+			return 0, nil
+		}
+		if err == ErrNotReady {
+			return defaultPostpone, nil
+		}
+		return 0, err
 	}
 
 	return 0, nil
