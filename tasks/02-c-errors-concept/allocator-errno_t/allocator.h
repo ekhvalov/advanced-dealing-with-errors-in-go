@@ -11,5 +11,19 @@ extern int errno;
 
 errno_t allocate(int user_id, size_t size, void **mem)
 {
-    // Реализуй меня.
+        errno_t err = 0;
+        if (user_id != ADMIN) {
+            err = EPERM;
+        } else if (size < MIN_MEMORY_BLOCK) {
+            err = EDOM;
+        } else {
+            *mem = malloc(size);
+            if (*mem == NULL) {
+                err = ENOMEM;
+            }
+        }
+        if (err != 0) {
+            mem = NULL;
+        }
+        return err;
 }
