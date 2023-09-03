@@ -1,6 +1,8 @@
 package pipe
 
-import "fmt"
+import (
+	"fmt"
+)
 
 type UserError struct {
 	Operation string
@@ -22,3 +24,15 @@ func (p *PipelineError) Error() string {
 }
 
 // Добавь метод As для типа *PipelineError.
+func (p *PipelineError) As(target interface{}) bool {
+	switch err := target.(type) {
+	case **UserError:
+		*err = &UserError{
+			Operation: p.Name,
+			User:      p.User,
+		}
+		return true
+	default:
+		return false
+	}
+}
