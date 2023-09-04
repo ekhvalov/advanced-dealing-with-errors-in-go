@@ -1,9 +1,10 @@
 package errors
 
+import "errors"
+
 func IsTemporary(err error) bool {
-	type t interface {
+	var t interface {
 		IsTemporary() bool
 	}
-	// Реализуй меня.
-	return false
+	return errors.As(err, &t) && t.IsTemporary()
 }
