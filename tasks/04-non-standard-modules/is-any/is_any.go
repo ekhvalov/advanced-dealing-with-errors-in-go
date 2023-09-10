@@ -1,6 +1,15 @@
 package errors
 
+import "errors"
+
 func IsAny(err error, references ...error) bool {
-	// Реализуй меня.
+	if nil == err {
+		return false
+	}
+	for _, e := range references {
+		if errors.Is(err, e) {
+			return true
+		}
+	}
 	return false
 }
