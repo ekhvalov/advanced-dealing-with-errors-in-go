@@ -1,12 +1,20 @@
 package tmpl
 
-// IsFunctionNotDefinedError говорит, является ли err ошибкой неопределённой в шаблоне функции.
+import (
+	"errors"
+	"regexp"
+	"text/template"
+)
+
+var funcNotDefinedRe = regexp.MustCompile(`template: \w+:\d+: function "\w+" not defined`)
+
 func IsFunctionNotDefinedError(err error) bool {
-	return false
+	return err != nil && funcNotDefinedRe.MatchString(err.Error())
 }
 
-// IsExecUnexportedFieldError говорит, является ли err template.ExecError,
-// а именно ошибкой использования неэкспортируемого поля структуры.
+var unexportedFieldRe = regexp.MustCompile(`template:.*executing.*: \w+ is an unexported field of struct type`)
+
 func IsExecUnexportedFieldError(err error) bool {
-	return false
+	var execErr template.ExecError
+	return errors.As(err, &execErr) && unexportedFieldRe.MatchString(execErr.Error())
 }
