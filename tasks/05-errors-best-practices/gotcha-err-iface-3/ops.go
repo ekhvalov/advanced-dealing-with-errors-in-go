@@ -15,13 +15,15 @@ type IOperation interface {
 }
 
 func Handle(ops ...IOperation) error {
-	var opsErrs OperationsErrors
+	var opsErrs = make(OperationsErrors, 0, len(ops))
 
 	for _, op := range ops {
 		if err := op.Do(); err != nil {
 			opsErrs = append(opsErrs, err)
 		}
 	}
-
+	if len(opsErrs) == 0 {
+		return nil
+	}
 	return opsErrs
 }
