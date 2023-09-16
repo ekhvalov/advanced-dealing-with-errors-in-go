@@ -1,12 +1,12 @@
 package rest
 
-func Handle() error {
-	var err *HTTPError
+import "fmt"
 
-	if err2 := usefulWork(); err2 != nil {
-		err = ErrInternalServerError
+func Handle() error {
+	if err := usefulWork(); err != nil {
+		return fmt.Errorf("%w: %v", ErrInternalServerError, err)
 	}
-	return err
+	return nil
 }
 
 var usefulWork = func() error {
