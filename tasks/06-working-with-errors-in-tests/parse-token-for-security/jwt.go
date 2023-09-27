@@ -10,7 +10,7 @@ import (
 
 // ParseToken парсит и валидирует токен jwt, проверяя, что он подписан
 // алгоритмом HMAC SHA256 с использованием ключа secret.
-func ParseToken(jwt, secret []byte) (Token, error) {
+func ParseToken(jwt, secret []byte) (token Token, err error) {
 	if len(jwt) == 0 {
 		return Token{}, ErrEmptyJWT
 	}
@@ -21,6 +21,17 @@ func ParseToken(jwt, secret []byte) (Token, error) {
 	}
 
 	headerData, payloadData, signData := parts[0], parts[1], parts[2]
+
+	t, err := parsePayload(payloadData)
+	if err != nil {
+		return Token{}, fmt.Errorf("%w: %v", ErrInvalidPayloadEncoding, err)
+	}
+
+	defer func() {
+		if err != nil {
+			err = newErrorWithEmail(err, t.Email)
+		}
+	}()
 
 	h, err := parseHeader(headerData)
 	if err != nil {
@@ -38,11 +49,6 @@ func ParseToken(jwt, secret []byte) (Token, error) {
 		secret,
 	); err != nil {
 		return Token{}, fmt.Errorf("verify signature: %w", err)
-	}
-
-	t, err := parsePayload(payloadData)
-	if err != nil {
-		return Token{}, fmt.Errorf("%w: %v", ErrInvalidPayloadEncoding, err)
 	}
 
 	if time.Unix(t.ExpiredAt, 0).Before(time.Now()) {
